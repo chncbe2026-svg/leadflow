@@ -1,0 +1,4 @@
+# LeadFlow Git Ignore
+.env
+.env.local
+*.log

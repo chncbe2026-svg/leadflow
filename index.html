@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#030712" />
+  <title>LeadFlow · Command Center</title>
+  <link rel="icon" type="image/png" href="Lead flow.png" />
+  <link rel="apple-touch-icon" href="Lead flow.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg-glow glow-a"></div>
+  <div class="bg-glow glow-b"></div>
+  <div class="bg-grid"></div>
+
+  <!-- ═══════════ AUTH ═══════════ -->
+  <main id="authView" class="auth-view">
+    <section class="auth-card">
+      <div class="auth-brand-banner">
+        <img src="Lead flow.png" alt="LeadFlow Logo" class="auth-brand-logo" />
+      </div>
+      <p class="eyebrow" id="authEyebrow">LEADFLOW / SECURE ACCESS</p>
+      <h1 id="authTitle">Your leads,<br /><span>in motion.</span></h1>
+      <p id="authCopy" class="auth-copy">Sign in to open your live command center.</p>
+
+      <form id="authForm" autocomplete="off">
+        <div class="field" id="nameField">
+          <label for="usernameInput">Username</label>
+          <input id="usernameInput" type="text" placeholder="e.g. dinu" autocomplete="username" spellcheck="false" />
+        </div>
+
+        <div class="field">
+          <label for="pinInput" id="pinLabel">4-digit PIN</label>
+          <input id="pinInput" class="pin-input" type="password" inputmode="numeric" maxlength="4" placeholder="••••" autocomplete="off" />
+        </div>
+
+        <div class="field hidden" id="confirmField">
+          <label for="confirmInput">Confirm PIN</label>
+          <input id="confirmInput" class="pin-input" type="password" inputmode="numeric" maxlength="4" placeholder="••••" autocomplete="off" />
+        </div>
+
+        <div class="field hidden" id="recoveryField">
+          <label for="recoveryInput">Recovery code</label>
+          <input id="recoveryInput" type="text" placeholder="XXXX-XXXX" autocomplete="off" spellcheck="false" />
+        </div>
+
+        <p id="authError" class="form-error" role="alert"></p>
+        <button class="btn-primary btn-block" type="submit" id="authSubmit">
+          <span id="authSubmitText">Sign in</span>
+          <span class="arrow">→</span>
+        </button>
+
+        <button type="button" class="btn-secondary-block" id="switchBtn">
+          <span id="switchBtnText">＋ Register new account</span>
+        </button>
+      </form>
+
+      <div class="auth-links">
+        <button type="button" id="forgotLink">Forgot PIN?</button>
+      </div>
+
+      <div id="recoveryBox" class="recovery-box hidden">
+        <p class="recovery-title">✦ Save your recovery code</p>
+        <p class="recovery-sub">You'll need this if you ever forget your PIN.</p>
+        <div class="recovery-code" id="recoveryCodeOut">—</div>
+        <div class="recovery-actions">
+          <button type="button" class="btn-ghost" id="copyRecovery">Copy</button>
+          <button type="button" class="btn-primary" id="recoveryDone">I've saved it <span class="arrow">→</span></button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ═══════════ ADMIN ═══════════ -->
+  <main id="adminView" class="admin-view hidden">
+    <header class="admin-top">
+      <div class="brand">
+        <img src="Lead flow.png" alt="LeadFlow" class="admin-brand-logo" />
+      </div>
+      <div class="top-actions">
+        <span class="admin-badge">⚙ ADMIN CONSOLE</span>
+        <button id="adminOpenDash" class="btn-primary">Open dashboard <span class="arrow">→</span></button>
+        <button id="adminSettings" class="icon-btn" title="Connection settings">⚙</button>
+        <button id="adminLogout" class="icon-btn" title="Sign out">⤶</button>
+      </div>
+    </header>
+
+    <section class="admin-stats">
+      <article class="stat stat-glow-cyan">
+        <div class="stat-ico-wrap ico-cyan">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        </div>
+        <div>
+          <small>REGISTERED USERS</small>
+          <strong id="adUsers">0</strong>
+          <em id="adUsersNote">accounts on this device</em>
+        </div>
+      </article>
+
+      <article class="stat stat-glow-purple">
+        <div class="stat-ico-wrap ico-purple">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+        </div>
+        <div>
+          <small>SUB-SHEETS</small>
+          <strong id="adSheets">0</strong>
+          <em id="adSheetsNote">detected tabs</em>
+        </div>
+      </article>
+
+      <article class="stat stat-glow-blue">
+        <div class="stat-ico-wrap ico-blue">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        </div>
+        <div>
+          <small>TOTAL LEADS</small>
+          <strong id="adLeads">0</strong>
+          <em id="adLeadsNote">across all sub-sheets</em>
+        </div>
+      </article>
+
+      <article class="stat stat-glow-green">
+        <div class="stat-ico-wrap ico-green">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        </div>
+        <div>
+          <small>CONNECTION</small>
+          <strong id="adConn" class="conn-text">—</strong>
+          <em id="adConnNote">Apps Script</em>
+        </div>
+      </article>
+    </section>
+
+    <section class="admin-body">
+      <div class="admin-card">
+        <div class="admin-card-head">
+          <div><p class="eyebrow">ACCESS CONTROL</p><h2>User accounts</h2></div>
+          <button id="addUserBtn" class="btn-primary btn-sm">＋ Add user</button>
+        </div>
+        <div class="user-table-wrap">
+          <table class="user-table">
+            <thead><tr><th>User</th><th>Role</th><th>Created</th><th>Last sign-in</th><th class="ta-right">Actions</th></tr></thead>
+            <tbody id="userTableBody"></tbody>
+          </table>
+          <div id="noUsers" class="empty hidden" style="padding:40px 20px">
+            <div class="empty-icon">✦</div>
+            <h3>No users yet</h3>
+            <p>Add the first account to get started.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="admin-side">
+        <div class="admin-card">
+          <div class="admin-card-head"><div><p class="eyebrow">SYSTEM</p><h2>Connection</h2></div></div>
+          <div class="conn-rows">
+            <div class="conn-row"><span>Apps Script</span><b id="sysEndpoint">—</b></div>
+            <div class="conn-row"><span>Spreadsheet</span><b id="sysSheet">—</b></div>
+            <div class="conn-row"><span>Reading mode</span><b id="sysMode">—</b></div>
+            <div class="conn-row"><span>Last sync</span><b id="sysSync">—</b></div>
+          </div>
+          <div class="conn-actions">
+            <button id="sysRetest" class="btn-ghost">↻ Re-detect sub-sheets</button>
+            <button id="sysSettings" class="btn-ghost">⚙ Edit connection</button>
+          </div>
+        </div>
+
+        <div class="admin-card danger-card">
+          <div class="admin-card-head"><div><p class="eyebrow">DANGER ZONE</p><h2>Reset device</h2></div></div>
+          <p class="danger-copy">Removes all local users, PINs and session keys. Google Sheets data and connection settings remain intact.</p>
+          <button id="resetUsers" class="btn-danger">Delete all users</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ═══════════ DASHBOARD ═══════════ -->
+  <div id="appView" class="app hidden">
+    <aside id="sidebar" class="sidebar">
+      <div class="side-head">
+        <div class="brand-mini">
+          <img src="Lead flow.png" alt="LeadFlow" class="sidebar-brand-logo" />
+        </div>
+        <button id="closeSidebar" class="icon-btn only-mobile" title="Close sidebar">✕</button>
+      </div>
+
+      <div class="side-search">
+        <span>⌕</span>
+        <input id="sideSearch" type="search" placeholder="Search all leads…" />
+        <kbd>/</kbd>
+      </div>
+
+      <div class="side-label">SUB-SHEETS</div>
+      <nav id="sheetNav" class="sheet-nav"></nav>
+
+      <div class="side-foot">
+        <button id="settingsBtn" class="side-action"><span>⚙</span> Settings</button>
+        <button id="lockBtn" class="side-action"><span>⤶</span> Lock</button>
+      </div>
+    </aside>
+    <div id="sideBackdrop" class="backdrop hidden"></div>
+
+    <div class="main">
+      <header class="topbar">
+        <button id="menuBtn" class="icon-btn only-mobile" title="Open navigation">☰</button>
+        <img src="Lead flow.png" alt="LeadFlow" class="mobile-topbar-logo only-mobile" />
+        <div class="title-block">
+          <h1 id="pageTitle">Overview</h1>
+          <p id="pageSub">Waiting for connection…</p>
+        </div>
+        <div class="top-actions">
+          <div class="user-chip" id="userChip" title="Switch user">
+            <span class="uc-avatar" id="ucAvatar">?</span>
+            <span class="uc-name" id="ucName">user</span>
+            <span class="uc-caret">▾</span>
+          </div>
+          <a id="openSheetLink" class="icon-btn" title="Open in Google Sheets" target="_blank" rel="noopener">↗</a>
+          <div class="live-pill"><i></i><span id="liveText">Live</span></div>
+          <button id="refreshBtn" class="icon-btn" title="Refresh now">↻</button>
+          <button id="addBtn" class="btn-primary btn-add">＋ Add lead</button>
+        </div>
+      </header>
+
+      <div id="banner" class="banner hidden"></div>
+
+      <section class="stats">
+        <article class="stat stat-glow-cyan">
+          <div class="stat-ico-wrap ico-cyan">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          </div>
+          <div>
+            <small>TOTAL LEADS</small>
+            <strong id="statTotal">—</strong>
+            <em id="statTotalNote">across all sub-sheets</em>
+          </div>
+        </article>
+
+        <article class="stat stat-glow-green">
+          <div class="stat-ico-wrap ico-green">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          </div>
+          <div>
+            <small>INTERESTED</small>
+            <strong id="statInterested">—</strong>
+            <em id="statInterestedNote">ready to close</em>
+          </div>
+        </article>
+
+        <article class="stat stat-glow-amber">
+          <div class="stat-ico-wrap ico-amber">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          </div>
+          <div>
+            <small>FOLLOW UP</small>
+            <strong id="statFollowUp">—</strong>
+            <em id="statFollowUpNote">active pipeline</em>
+          </div>
+        </article>
+
+        <article class="stat stat-glow-blue">
+          <div class="stat-ico-wrap ico-blue">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+          </div>
+          <div>
+            <small>RNR / PENDING</small>
+            <strong id="statRnr">—</strong>
+            <em id="statRnrNote">ringing / awaiting reply</em>
+          </div>
+        </article>
+      </section>
+
+      <section class="panel">
+        <div class="panel-bar">
+          <div class="panel-title-group">
+            <div class="panel-title">
+              <h2 id="panelTitle">All leads</h2>
+              <span id="countBadge" class="badge">0</span>
+            </div>
+            <div class="status-filters" id="statusFilters">
+              <button class="filter-pill active" data-filter="ALL" type="button">All <span id="fCountAll" class="f-count"></span></button>
+              <button class="filter-pill" data-filter="INTERESTED" type="button"><span class="f-dot dot-interested"></span>Interested <span id="fCountInterested" class="f-count"></span></button>
+              <button class="filter-pill" data-filter="FOLLOWUP" type="button"><span class="f-dot dot-followup"></span>Follow up <span id="fCountFollowup" class="f-count"></span></button>
+              <button class="filter-pill" data-filter="NOT_INTERESTED" type="button"><span class="f-dot dot-not-interested"></span>Not Interested <span id="fCountNotInterested" class="f-count"></span></button>
+              <button class="filter-pill" data-filter="JUNK" type="button"><span class="f-dot dot-junk"></span>JUNK <span id="fCountJunk" class="f-count"></span></button>
+              <button class="filter-pill" data-filter="RNR" type="button"><span class="f-dot dot-rnr"></span>RNR <span id="fCountRnr" class="f-count"></span></button>
+            </div>
+          </div>
+          <div class="bar-tools">
+            <div class="mini-search">
+              <span class="search-ico">⌕</span>
+              <input id="tableSearch" type="search" placeholder="Filter leads…" />
+            </div>
+            <button id="exportBtn" class="btn-ghost" title="Export current view to CSV">↓ Export</button>
+          </div>
+        </div>
+        <div id="loadingBar" class="loading-bar hidden"><span></span></div>
+        <div class="table-scroll">
+          <table id="dataTable"><thead id="tableHead"></thead><tbody id="tableBody"></tbody></table>
+          <div id="emptyState" class="empty hidden">
+            <div class="empty-icon">✦</div>
+            <h3 id="emptyTitle">Nothing here yet</h3>
+            <p id="emptyText">Add a lead or pick another sub-sheet.</p>
+          </div>
+        </div>
+        <div class="panel-foot">
+          <span id="footLeft">0 leads</span>
+          <span class="foot-sync"><i></i> Syncing automatically</span>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- ═══════════ DRAWER ═══════════ -->
+  <aside id="drawer" class="drawer">
+    <div class="drawer-head">
+      <div class="drawer-title-group">
+        <p class="eyebrow">LEAD DETAILS</p>
+        <h2 id="drawerTitle">Lead</h2>
+      </div>
+      <button id="closeDrawer" class="icon-btn" title="Close details">✕</button>
+    </div>
+    <div id="drawerQuickActions" class="drawer-quick-actions"></div>
+    <div id="drawerStatusBar" class="drawer-status-bar"></div>
+    <div id="drawerBody" class="drawer-body"></div>
+    <div class="drawer-foot">
+      <button id="editBtn" class="btn-primary">Edit lead <span class="arrow">→</span></button>
+      <button id="deleteBtn" class="btn-danger-ghost">Delete</button>
+    </div>
+  </aside>
+  <div id="drawerBackdrop" class="backdrop hidden"></div>
+
+  <!-- ═══════════ LEAD MODAL ═══════════ -->
+  <div id="leadModal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div><p class="eyebrow" id="modalEyebrow">NEW LEAD</p><h2 id="modalTitle">Add a lead</h2></div>
+        <button id="closeLeadModal" class="icon-btn" title="Close">✕</button>
+      </div>
+      <form id="leadForm">
+        <div id="leadFields" class="lead-fields"></div>
+        <p id="modalMessage" class="form-error"></p>
+        <div class="modal-foot">
+          <button type="button" id="cancelLeadModal" class="btn-ghost">Cancel</button>
+          <button type="submit" class="btn-primary">Save lead <span class="arrow">→</span></button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═══════════ USER MODAL ═══════════ -->
+  <div id="userModal" class="modal hidden">
+    <div class="modal-card modal-sm">
+      <div class="modal-head">
+        <div><p class="eyebrow" id="userModalEyebrow">NEW ACCOUNT</p><h2 id="userModalTitle">Add user</h2></div>
+        <button id="closeUserModal" class="icon-btn" title="Close">✕</button>
+      </div>
+      <form id="userForm">
+        <div class="field"><label for="nuName">Username</label><input id="nuName" type="text" placeholder="e.g. priya" spellcheck="false" /></div>
+        <div class="field"><label for="nuPin">4-digit PIN</label><input id="nuPin" class="pin-input" type="password" inputmode="numeric" maxlength="4" placeholder="••••" autocomplete="off" /></div>
+        <p id="userModalMsg" class="form-error"></p>
+        <div class="modal-foot">
+          <button type="button" id="cancelUserModal" class="btn-ghost">Cancel</button>
+          <button type="submit" class="btn-primary">Save <span class="arrow">→</span></button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═══════════ SETTINGS MODAL ═══════════ -->
+  <div id="settingsModal" class="modal hidden">
+    <div class="modal-card modal-wide">
+      <div class="modal-head">
+        <div><p class="eyebrow">CONFIGURATION</p><h2>Connect your sheet</h2></div>
+        <button id="closeSettings" class="icon-btn" title="Close">✕</button>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <span class="step-num">1</span>
+          <div>
+            <label for="cfgEndpoint">Apps Script Web App URL</label>
+            <p class="hint">Unlocks <b>auto sub-sheet detection</b>, live reads, and add/edit/delete — no public web publishing required.</p>
+            <input id="cfgEndpoint" type="url" placeholder="https://script.google.com/macros/s/…/exec" />
+            <div class="row-inline">
+              <button id="testConnBtn" class="btn-ghost" type="button">🧪 Test &amp; detect sub-sheets</button>
+              <span id="testResult" class="test-result"></span>
+            </div>
+            <details class="guide">
+              <summary>How to deploy Code.gs (60 seconds)</summary>
+              <ol>
+                <li>Open <a href="https://script.google.com" target="_blank" rel="noopener">script.google.com</a> → <b>New project</b></li>
+                <li>Delete the sample code, paste everything from <code>Code.gs</code></li>
+                <li>Click <b>Deploy → New deployment</b> → type <b>Web app</b></li>
+                <li>Execute as: <b>Me</b> · Who has access: <b>Anyone</b></li>
+                <li>Click <b>Deploy</b>, allow permissions, copy the <b>/exec</b> URL</li>
+                <li>Paste it above and click <b>Test &amp; detect sub-sheets</b></li>
+              </ol>
+              <p class="guide-note">Already deployed? <b>Deploy → Manage deployments → ✎ Edit → Version: New version → Deploy</b>. The URL stays the same.</p>
+            </details>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">2</span>
+          <div>
+            <label for="cfgSheetId">Spreadsheet ID</label>
+            <p class="hint">Auto-filled from your link. Only change if you switch sheets.</p>
+            <input id="cfgSheetId" type="text" placeholder="1Pcy8PTNEC5…" />
+          </div>
+        </div>
+      </div>
+      <div id="detectedWrap" class="detected hidden">
+        <div class="detected-head"><span>Detected sub-sheets</span><span id="detectedCount" class="badge">0</span></div>
+        <div id="detectedList" class="detected-list"></div>
+      </div>
+      <div class="modal-foot"><button id="saveSettings" class="btn-primary">Save &amp; connect <span class="arrow">→</span></button></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
