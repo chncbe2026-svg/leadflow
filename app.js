@@ -19,7 +19,8 @@ const KEY = {
   users: 'lf_users', session: 'lf_session',
   endpoint: 'lf_endpoint', sheetId: 'lf_sheetId',
   hidden: 'lf_hiddenGids', manual: 'lf_manualSources',
-  cacheData: 'lf_cached_data', cacheSheets: 'lf_cached_sheets'
+  cacheData: 'lf_cached_data', cacheSheets: 'lf_cached_sheets',
+  theme: 'lf_theme'
 };
 
 function saveCache() {
@@ -79,6 +80,73 @@ const idxMatch = (cols, keys) => {
 const isEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(v).trim());
 const isPhone = v => /^[+(]?\d[\d\s().-]{6,}$/.test(String(v).trim()) && String(v).replace(/\D/g,'').length >= 7;
 const dateRE = /\b(\d{4}[-/]\d{1,2}[-/]\d{1,2}|\d{1,2}[-/]\d{1,2}[-/]\d{2,4})\b/;
+
+/* ─────────── CLIPBOARD & TOAST ─────────── */
+function showToast(msg, duration = 2200) {
+  let toast = $('toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.className = 'toast-msg';
+    document.body.appendChild(toast);
+  }
+  toast.innerHTML = `<span style="color:var(--green);font-size:15px">✓</span> <span>${esc(msg)}</span>`;
+  toast.classList.add('show');
+  clearTimeout(showToast._timer);
+  showToast._timer = setTimeout(() => {
+    toast.classList.remove('show');
+  }, duration);
+}
+
+async function copyText(text, btnElement, feedbackText = 'Copied ✓') {
+  if (!text) return;
+  const cleanStr = String(text).trim();
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(cleanStr);
+    } else {
+      throw new Error('Clipboard API not available');
+    }
+  } catch (_) {
+    const ta = document.createElement('textarea');
+    ta.value = cleanStr;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch (_) {}
+    ta.remove();
+  }
+
+  showToast('Copied to clipboard!');
+
+  if (btnElement) {
+    btnElement.classList.add('copied');
+    const oldHtml = btnElement.getAttribute('data-old-html') || btnElement.innerHTML;
+    if (!btnElement.getAttribute('data-old-html')) {
+      btnElement.setAttribute('data-old-html', oldHtml);
+    }
+    const span = btnElement.querySelector('span');
+    if (span) {
+      span.textContent = feedbackText;
+    } else if (btnElement.textContent.trim().length > 2) {
+      btnElement.textContent = feedbackText;
+    } else {
+      btnElement.innerHTML = '✓';
+    }
+    setTimeout(() => {
+      btnElement.classList.remove('copied');
+      btnElement.innerHTML = oldHtml;
+      btnElement.removeAttribute('data-old-html');
+    }, 1600);
+  }
+}
+
+function copyPhone(num, btnElement) {
+  const clean = String(num || '').trim();
+  copyText(clean, btnElement, 'Copied ✓');
+  showToast(`Phone number: ${clean} copied!`);
+}
 
 /* ─────────── CRYPTO ─────────── */
 async function sha(v) {
@@ -873,8 +941,25 @@ function renderTable() {
       const val = String(r.cells[ci] ?? '');
       let inner;
       if (ci === iStatus) inner = val ? `<span class="pill ${statusClass(val)}">${esc(val)}</span>` : '';
-      else if (ci === iEmail || (val && isEmail(val))) inner = `<a class="cell-link" href="mailto:${esc(val)}" onclick="event.stopPropagation()">${esc(val)}</a>`;
-      else if (ci === iPhone || (val && isPhone(val))) inner = `<a class="cell-link" href="tel:${esc(val.replace(/[^\d+]/g, ''))}" onclick="event.stopPropagation()">${esc(val)}</a>`;
+      else if (ci === iEmail || (val && isEmail(val))) {
+        const eVal = esc(val);
+        inner = `<div class="cell-copy-wrap">
+          <a class="cell-link" href="mailto:${eVal}" onclick="event.stopPropagation()">${eVal}</a>
+          <button type="button" class="copy-btn" title="Copy email (${eVal})" onclick="event.stopPropagation(); copyText('${eVal}', this)">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          </button>
+        </div>`;
+      }
+      else if (ci === iPhone || (val && isPhone(val))) {
+        const pVal = esc(val);
+        const rawP = esc(val.replace(/[^\d+]/g, ''));
+        inner = `<div class="cell-copy-wrap">
+          <a class="cell-link" href="tel:${rawP}" onclick="event.stopPropagation()">${pVal}</a>
+          <button type="button" class="copy-btn" title="Copy phone number (${pVal})" onclick="event.stopPropagation(); copyPhone('${pVal}', this)">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          </button>
+        </div>`;
+      }
       else if (ci === iSrc) inner = val ? `<span class="src-tag">${esc(val)}</span>` : '';
       else if (ci === iName && /[a-z]/i.test(val)) inner = `<span class="cell-avatar ${initials(val).charCodeAt(0) % 2 ? 'alt' : ''}">${initials(val)}</span>${esc(val)}`;
       else inner = esc(val);
@@ -931,6 +1016,10 @@ function openDrawer(gid, rowIndex) {
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
         WhatsApp
       </a>`;
+      qaHtml += `<button type="button" class="quick-action-btn qa-copy" onclick="copyPhone('${esc(phoneVal)}', this)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        <span>Copy Phone</span>
+      </button>`;
     }
     if (mailVal && isEmail(mailVal)) {
       qaHtml += `<a class="quick-action-btn qa-mail" href="mailto:${esc(mailVal)}">
@@ -980,7 +1069,13 @@ function openDrawer(gid, rowIndex) {
     if (isEmail(val)) content = `<a href="mailto:${esc(val)}">${esc(val)}</a>`;
     else if (isPhone(val)) content = `<a href="tel:${esc(val.replace(/[^\d+]/g, ''))}">${esc(val)}</a>`;
     else if (/^https?:\/\//i.test(val)) content = `<a href="${esc(val)}" target="_blank" rel="noopener">${esc(val)}</a>`;
-    return `<div class="detail"><div class="d-ico">${esc(col)[0]?.toUpperCase() || '•'}</div><div class="d-body"><small>${esc(col)}</small><p>${content}</p></div></div>`;
+    return `<div class="detail">
+      <div class="d-ico">${esc(col)[0]?.toUpperCase() || '•'}</div>
+      <div class="d-body"><small>${esc(col)}</small><p>${content}</p></div>
+      <button type="button" class="copy-field-btn" title="Copy ${esc(col)}: ${esc(val)}" onclick="copyText('${esc(val)}', this)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+      </button>
+    </div>`;
   }).join('');
   $('drawer').classList.add('open');
   $('drawerBackdrop').classList.remove('hidden');
@@ -1261,7 +1356,40 @@ $('resetUsers').addEventListener('click', () => {
 });
 
 $('settingsBtn').addEventListener('click', openSettings);
-$('lockBtn').addEventListener('click', signOut);
+$('lockBtn').addEventListener('click', () => {
+  if (confirm('Are you sure you want to sign out?')) signOut();
+});
+$('logoutBtn')?.addEventListener('click', () => {
+  if (confirm('Are you sure you want to sign out?')) signOut();
+});
+$('drawerCopyAllBtn')?.addEventListener('click', function() {
+  if (!state.current) return;
+  const { columns, row } = state.current;
+  const leadName = row[idxMatch(columns, NAME_H)] || row[0] || 'Lead';
+  const lines = [
+    `LEAD INFORMATION: ${leadName}`,
+    '━'.repeat(28)
+  ];
+  columns.forEach((col, i) => {
+    const val = String(row[i] ?? '').trim();
+    if (val) lines.push(`${col}: ${val}`);
+  });
+  lines.push('━'.repeat(28));
+  copyText(lines.join('\n'), this, 'Copied all ✓');
+  showToast('All lead information copied to clipboard!');
+});
+$('copyAllTableBtn')?.addEventListener('click', function() {
+  const view = buildView();
+  if (!view.rows.length) {
+    showToast('No leads available to copy');
+    return;
+  }
+  const headers = view.columns.join('\t');
+  const rows = view.rows.map(r => r.cells.map(c => String(c ?? '').replace(/[\t\r\n]+/g, ' ')).join('\t')).join('\n');
+  const tsv = `${headers}\n${rows}`;
+  copyText(tsv, this, 'Copied leads ✓');
+  showToast(`✓ ${view.rows.length} leads copied to clipboard!`);
+});
 $('menuBtn').addEventListener('click', openSidebar);
 $('closeSidebar').addEventListener('click', closeSidebar);
 $('sideBackdrop').addEventListener('click', closeSidebar);
@@ -1312,8 +1440,64 @@ setInterval(() => {
   if (s && s.exp < Date.now() && $('authView').classList.contains('hidden')) signOut();
 }, 30000);
 
+// Theme management
+function getSavedTheme() {
+  const t = localStorage.getItem(KEY.theme);
+  if (t === 'light' || t === 'dark') return t;
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+    return 'light';
+  }
+  return 'dark';
+}
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  const metaTheme = document.querySelector('meta[name="theme-color"]');
+  if (metaTheme) metaTheme.setAttribute('content', theme === 'light' ? '#f8fafc' : '#030712');
+
+  const isLight = theme === 'light';
+  const label = isLight ? 'Switch to Dark Mode' : 'Switch to Light Mode';
+  document.querySelectorAll('.theme-toggle-btn').forEach(btn => {
+    btn.setAttribute('title', label);
+    btn.setAttribute('aria-label', label);
+  });
+  const sideText = $('sideThemeText');
+  if (sideText) sideText.textContent = isLight ? 'Dark Mode' : 'Light Mode';
+  const sideIcon = document.querySelector('.side-theme-icon');
+  if (sideIcon) sideIcon.textContent = isLight ? '☾' : '☼';
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+  const next = current === 'light' ? 'dark' : 'light';
+  localStorage.setItem(KEY.theme, next);
+  applyTheme(next);
+}
+
+$('themeToggleBtn')?.addEventListener('click', toggleTheme);
+$('adminThemeToggleBtn')?.addEventListener('click', toggleTheme);
+$('authThemeToggleBtn')?.addEventListener('click', toggleTheme);
+$('sideThemeBtn')?.addEventListener('click', toggleTheme);
+
+// Theme toggle keyboard shortcut: 'T' when not typing in an input
+document.addEventListener('keydown', e => {
+  if ((e.key === 't' || e.key === 'T') && !/input|textarea|select/i.test(document.activeElement.tagName) && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    toggleTheme();
+  }
+});
+
+// React to system color scheme changes if user hasn't set an explicit preference
+if (window.matchMedia) {
+  window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', e => {
+    if (!localStorage.getItem(KEY.theme)) {
+      applyTheme(e.matches ? 'light' : 'dark');
+    }
+  });
+}
+
 /* ═══════════ BOOT ═══════════ */
 (function boot() {
+  applyTheme(getSavedTheme());
   const session = getSession();
   if (session) {
     enterDashboard();

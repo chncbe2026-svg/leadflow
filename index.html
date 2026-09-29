@@ -10,6 +10,17 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script>
+    (function () {
+      try {
+        var s = localStorage.getItem('lf_theme');
+        var t = s === 'light' || (!s && window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute('content', t === 'light' ? '#f8fafc' : '#030712');
+      } catch (_) {}
+    })();
+  </script>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -19,6 +30,12 @@
 
   <!-- ═══════════ AUTH ═══════════ -->
   <main id="authView" class="auth-view">
+    <div class="auth-theme-wrap">
+      <button type="button" id="authThemeToggleBtn" class="icon-btn theme-toggle-btn" title="Toggle theme (Light / Dark)" aria-label="Toggle theme">
+        <svg class="theme-icon sun-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        <svg class="theme-icon moon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      </button>
+    </div>
     <section class="auth-card">
       <div class="auth-brand-banner">
         <img src="Lead flow.png" alt="LeadFlow Logo" class="auth-brand-logo" />
@@ -84,6 +101,10 @@
       <div class="top-actions">
         <span class="admin-badge">⚙ ADMIN CONSOLE</span>
         <button id="adminOpenDash" class="btn-primary">Open dashboard <span class="arrow">→</span></button>
+        <button type="button" id="adminThemeToggleBtn" class="icon-btn theme-toggle-btn" title="Toggle theme (Light / Dark)" aria-label="Toggle theme">
+          <svg class="theme-icon sun-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+          <svg class="theme-icon moon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </button>
         <button id="adminSettings" class="icon-btn" title="Connection settings">⚙</button>
         <button id="adminLogout" class="icon-btn" title="Sign out">⤶</button>
       </div>
@@ -198,8 +219,11 @@
       <nav id="sheetNav" class="sheet-nav"></nav>
 
       <div class="side-foot">
+        <button type="button" id="sideThemeBtn" class="side-action" title="Toggle theme (Light / Dark)">
+          <span class="side-theme-icon">◐</span> <span id="sideThemeText">Light Mode</span>
+        </button>
         <button id="settingsBtn" class="side-action"><span>⚙</span> Settings</button>
-        <button id="lockBtn" class="side-action"><span>⤶</span> Lock</button>
+        <button id="lockBtn" class="side-action" title="Sign out of your account"><span>⤶</span> Sign out</button>
       </div>
     </aside>
     <div id="sideBackdrop" class="backdrop hidden"></div>
@@ -213,6 +237,10 @@
           <p id="pageSub">Waiting for connection…</p>
         </div>
         <div class="top-actions">
+          <button type="button" id="themeToggleBtn" class="icon-btn theme-toggle-btn" title="Toggle theme (Light / Dark)" aria-label="Toggle theme">
+            <svg class="theme-icon sun-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            <svg class="theme-icon moon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          </button>
           <div class="user-chip" id="userChip" title="Switch user">
             <span class="uc-avatar" id="ucAvatar">?</span>
             <span class="uc-name" id="ucName">user</span>
@@ -222,6 +250,9 @@
           <div class="live-pill"><i></i><span id="liveText">Live</span></div>
           <button id="refreshBtn" class="icon-btn" title="Refresh now">↻</button>
           <button id="addBtn" class="btn-primary btn-add">＋ Add lead</button>
+          <button type="button" id="logoutBtn" class="icon-btn logout-btn" title="Sign out / Log out" aria-label="Sign out">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          </button>
         </div>
       </header>
 
@@ -294,6 +325,7 @@
               <span class="search-ico">⌕</span>
               <input id="tableSearch" type="search" placeholder="Filter leads…" />
             </div>
+            <button id="copyAllTableBtn" class="btn-ghost" title="Copy all visible leads to clipboard">📋 Copy leads</button>
             <button id="exportBtn" class="btn-ghost" title="Export current view to CSV">↓ Export</button>
           </div>
         </div>
@@ -321,7 +353,13 @@
         <p class="eyebrow">LEAD DETAILS</p>
         <h2 id="drawerTitle">Lead</h2>
       </div>
-      <button id="closeDrawer" class="icon-btn" title="Close details">✕</button>
+      <div class="drawer-head-actions">
+        <button type="button" id="drawerCopyAllBtn" class="btn-ghost btn-sm" title="Copy all lead data to clipboard">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          Copy all
+        </button>
+        <button id="closeDrawer" class="icon-btn" title="Close details">✕</button>
+      </div>
     </div>
     <div id="drawerQuickActions" class="drawer-quick-actions"></div>
     <div id="drawerStatusBar" class="drawer-status-bar"></div>
@@ -419,6 +457,7 @@
     </div>
   </div>
 
+  <div id="toast" class="toast-msg"></div>
   <script src="app.js"></script>
 </body>
 </html>
